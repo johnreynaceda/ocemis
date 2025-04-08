@@ -9,6 +9,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\CreateAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
@@ -33,14 +34,14 @@ class MyAppointment extends Component implements HasForms, HasTable
                 TextColumn::make('user.name')->label('NAME')->searchable(),
                 TextColumn::make('event.name')->label('EVENT')->searchable(),
                 TextColumn::make('mode_of_payment')->label('MODE OF PAYMENT')->searchable(),
-                TextColumn::make('amount')->label('AMOUNT')->searchable()->formatStateUsing(fn($record) => '₱'.number_format($record->amount,2)),
+                TextColumn::make('amount')->label('AMOUNT')->searchable()->formatStateUsing(fn($record) => '₱' . number_format($record->amount, 2)),
                 TextColumn::make('status')->label('STATUS')->formatStateUsing(
                     fn($record) => ucfirst($record->status)
-                )->badge()->color(fn (string $state): string => match ($state) {
-                    'pending' => 'warning',
-                    'approved' => 'success',
-                    'declined' => 'danger',
-                })
+                )->badge()->color(fn(string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'declined' => 'danger',
+                    })
             ])
             ->filters([
                 SelectFilter::make('event_id')->label('Event')->options(
@@ -49,11 +50,15 @@ class MyAppointment extends Component implements HasForms, HasTable
             ])
             ->actions([
                 Action::make('view')->color('warning')->icon('heroicon-o-book-open')->button()->action(
-                    function($record){
-                        return redirect()->route('admin.appointment-view', $record->id);
+                    function ($record) {
+                        return redirect()->route(
+                            'client.view-appointment',
+                            ['id' => $record->id]
+                        );
                     }
                 ),
                 DeleteAction::make('delete')
+
             ])
             ->bulkActions([
                 // ...

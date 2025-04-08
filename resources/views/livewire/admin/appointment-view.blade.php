@@ -3,7 +3,7 @@
 
         <div class="px-5 pt-5 ">
             <x-button label="Back" icon="arrow-left" slate class="font-bold uppercase"
-                href="{{ route('admin.appointments') }}" />
+                href="{{ auth()->user()->role_id == 1 ? route('admin.appointments') : route('client.appointment') }}" />
         </div>
         <div class="border-b px-5 py-5 flex justify-between items-center">
             <div>
@@ -13,20 +13,34 @@
                         class="bg-blue-100 text-blue-800  font-semibold px-2.5 py-0.5 rounded-full">{{ $appointment->event->name }}</span>
                 </div>
             </div>
-            <div class="flex space-x-2 items-center">
-                @if ($appointment->status == 'pending')
-                    <x-button wire:click="approve" spinner="approve" label="Approve" icon="hand-thumb-up" squared
-                        outline class="font-semibold uppercase" positive />
-                    <x-button wire:click="reject" spinner="reject" label="Reject" icon="hand-thumb-down" squared outline
-                        class="font-semibold uppercase" negative />
-                @endif
-            </div>
+            @if (auth()->user()->role_id == 1)
+                <div class="flex space-x-2 items-center">
+                    @if ($appointment->status == 'pending')
+                        <x-button wire:click="approve" spinner="approve" label="Approve" icon="hand-thumb-up" squared
+                            outline class="font-semibold uppercase" positive />
+                        <x-button wire:click="reject" spinner="reject" label="Reject" icon="hand-thumb-down" squared
+                            outline class="font-semibold uppercase" negative />
+                    @endif
+                </div>
+            @endif
         </div>
         @switch($appointment->event_id)
             @case(1)
                 <div class="border-b">
                     <div class="p-5">
-                        <h1 class="text-lg font-bold text-gray-700">INFORMATION</h1>
+                        <div class="space-x-3 flex items-center">
+                            <h1 class="text-lg font-bold text-gray-700">INFORMATION</h1>
+                            <x-button sm label="Edit" class="font-semibold"
+                                @click="$dispatch('open-modal', { id: 'edit-user' })" positive icon="pencil-square" />
+                            <x-filament::modal id="edit-user" width="2xl">
+                                <x-slot name="heading">
+                                    Edit Information
+                                </x-slot>
+                                <div>
+                                    sdsdsdsd
+                                </div>
+                            </x-filament::modal>
+                        </div>
                         <div class="mt-5 grid grid-cols-5 gap-5">
                             <div>
                                 <span class="text-xs uppercase underline text-gray-500">Firstname</span>
